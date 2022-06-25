@@ -1,5 +1,4 @@
-import { PutCommand } from '@aws-sdk/lib-dynamodb'
-import { ddbDocClient } from '../lib/ddbDocClient.js'
+import { DynamoDB } from 'aws-sdk'
 import { sendNotificationNewCustomer } from './sns_message_waitlist.js'
 
 const joinWaitlist = async (email, name, product, additionalData = {}) => {
@@ -16,13 +15,12 @@ const joinWaitlist = async (email, name, product, additionalData = {}) => {
 
     console.log("Item", params.Item)
 
-    try {
-        const data = await ddbDocClient.send( new PutCommand (params) )
-        sendNotificationNewCustomer(name)
-        return data
-    } catch (err) {
-        console.log("Error", err)
-    }
+    const docClient = new DynamoDB.DocumentClient({apiVersion: '2012-08-10'})
+    docClient.put(params, (err, data) => {
+        if(err)
+            console.log('error', err)
+    })
+    sendNotificationNewCustomer(name)
 }
 
 export const joinSportWaitlist = async (email, name, sport) => {

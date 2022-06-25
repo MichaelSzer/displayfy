@@ -1,24 +1,39 @@
 <script setup>
-import { ref } from 'vue'
-import { getName, getWatchlist } from '../config/user'
+import { ref, reactive } from 'vue'
+import { getUser } from '../config/user'
 import { getStocks } from '../config/stocks'
+import { useRouter, useRoute } from 'vue-router'
+import { addWatchlist, removeWatchlist } from '../services/watchlist_service'
 
-const user = ref({ name: getName(), watchlist: getWatchlist() })
+const router = useRouter()
+const route = useRoute()
+
+const user = reactive(getUser())
 const stocks = ref(getStocks())
+
+const refreshUser = () => { 
+    // We can't do 'user = getUser()'. user would lose reactivity
+    user.email = getUser().email
+    user.name = getUser().name
+    // For non-primative data types we need to create a new instance if not vuejs doesn't updates
+    user.watchlist = [ ...getUser().watchlist ]
+}
 
 const isInWatchlist = (stock) => {
     // Check if the stock is in the Watchlist
-    return user.value.watchlist.includes(stock)
+    return user.watchlist.includes(stock)
 }
 
 const stockAvailableClicked = (stock) => {
     const i = user.value.watchlist.indexOf(stock)
     console.log(i)
     if ( i !== -1 )
-        user.value.watchlist.splice(i, 1)
+        user.watchlist.splice(i, 1)
     else
-        user.value.watchlist.push(stock)
+        user.watchlist.push(stock)
 }
+
+setTimeout(refreshUser, 3000)
 
 </script>
 
@@ -33,7 +48,7 @@ const stockAvailableClicked = (stock) => {
             <div style="flex: 0.2;"></div>
             <ul class="list">
                 <span class="listTitle">Available Stocks</span>
-                <li class="stock" v-for="stock in stocks" @click="stockAvailableClicked(stock)">
+                <li class="stock" v-for="stock in stocks" @click="isInWatchlist(stock)?removeWatchlist('000001',stock,refreshUser):addWatchlist('000001',stock, refreshUser)">
                     <p>{{stock}}</p>
                     <div v-if="isInWatchlist(stock)" class="sign" style="padding-left: 0.15em;">{{'-'}}</div>
                     <div v-else class="sign">{{'+'}}</div>
@@ -42,7 +57,7 @@ const stockAvailableClicked = (stock) => {
             <div style="flex: 0.2;"></div>
             <ul class="list">
                 <span class="listTitle">Watchlist</span>
-                <li class="stock" v-for="stock in user.watchlist" @click="stockAvailableClicked(stock)">
+                <li class="stock" v-for="stock in user.watchlist" @click="removeWatchlist('000001',stock,refreshUser)">
                     {{stock}}
                     <div class="sign" style="padding-left: 0.15em;">{{'-'}}</div>
                 </li>

@@ -8,12 +8,10 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity": "^3.109.0",
-    "@aws-sdk/client-dynamodb": "^3.105.0",
-    "@aws-sdk/client-sns": "^3.110.0",
-    "@aws-sdk/credential-provider-cognito-identity": "^3.109.0",
-    "@aws-sdk/lib-dynamodb": "^3.105.0",
-    "vue": "^3.2.36"
+    "amazon-cognito-identity-js": "^5.2.9",
+    "aws-sdk": "^2.1162.0",
+    "vue": "^3.2.36",
+    "vue-router": "^4.0.16"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.3",

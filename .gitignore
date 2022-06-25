@@ -26,3 +26,10 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+build/
+dist/
+node_modules/
+aws-exports.js
+.secret-*
+**.sample
+#amplify-do-not-edit-end

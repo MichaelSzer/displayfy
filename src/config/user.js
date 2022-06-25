@@ -1,7 +1,19 @@
-let name = 'Sergio'
+let user = {
+    name: '-',
+    email: '-',
+    watchlist: []
+}
 
-let watchlist = ['TSLA', 'MSFT', 'ME', 'SBUX', 'SPY']
+export const getUser = () => { return { ...user } }
 
-export const getName = () => name
+export const setWatchlist = (watchlist) => {
+    user.watchlist = watchlist
+}
 
-export const getWatchlist = () => watchlist
+export const setUser = (name, email, watchlist) => {
+    user = {
+        name,
+        email,
+        watchlist
+    }
+}
