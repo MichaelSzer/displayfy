@@ -43,10 +43,23 @@ let onSuccess = (res) => {
 
     AWS.config.credentials.expired = true;
 
-    setUser(res.idToken.payload.name, res.idToken.payload.email, ['TSLA'])
+    setUser(res.idToken.payload.name, res.idToken.payload.email, [])
     fetchWatchlist('000001')
 
-    console.log(res)
+    // Attach Policy to created authenticated user
+    const params = {
+        policyName: 'displayfy-website-policy',
+        target: AWS.config.credentials.identityId
+    }
+    
+    const iotClient = new AWS.Iot({apiVersion: '2015-05-28'})
+    iotClient.attachPolicy(params, (err, data) => {
+        if(err){
+            console.log('error', err)
+            return
+        }
+    })
+    console.log(AWS.config.credentials)
 }
 
 onSuccess.bind(this)

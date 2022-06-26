@@ -1,4 +1,4 @@
-import { DynamoDB } from 'aws-sdk'
+import { DynamoDB, IotData } from 'aws-sdk'
 import { setWatchlist, getUser } from '../config/user'
 
 const TABLE_NAME = 'Watchlist'
@@ -24,6 +24,7 @@ export const fetchWatchlist = (deviceId) => {
     })
 }
 
+// 1. Add stock to DynamoDB Watchlist 2. Update dashboard 3. Notify devices with MQTT
 export const addWatchlist = (deviceId, stock, onSuccess) => {
     let watchlist = getUser().watchlist;
     watchlist.push(stock)
@@ -36,15 +37,32 @@ export const addWatchlist = (deviceId, stock, onSuccess) => {
         }
     }
 
+    // Add to DynamoDB
     const docClient = new DynamoDB.DocumentClient({apiVersion: '2012-08-10'})
     docClient.put(params, (err, data) => {
         if(err){
             console.log('error', err)
             return
         }
-
+        
         setWatchlist(watchlist)
         onSuccess()
+
+        // Publish a message to IoT broker.
+        const params = {
+            topic: 'test',
+            payload: JSON.stringify({ stock })
+        }
+        
+        const iotDataClient = new IotData({ endpoint: 'ajotwaqg3w5p0-ats.iot.us-east-1.amazonaws.com', apiVersion: '2015-05-28' })
+        iotDataClient.publish(params, (err, data) => {
+            if(err){
+                console.log('error', err)
+                return
+            }
+            
+            console.log('Published MQTT message.')
+        })
     })
 }
 
