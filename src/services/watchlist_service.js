@@ -50,8 +50,8 @@ export const addWatchlist = (deviceId, stock, onSuccess) => {
 
         // Publish a message to IoT broker.
         const params = {
-            topic: 'test',
-            payload: JSON.stringify({ stock })
+            topic: 'devices/' + deviceId + '/stocks/add/' + stock,
+            payload: JSON.stringify({})
         }
         
         const iotDataClient = new IotData({ endpoint: 'ajotwaqg3w5p0-ats.iot.us-east-1.amazonaws.com', apiVersion: '2015-05-28' })
@@ -60,8 +60,6 @@ export const addWatchlist = (deviceId, stock, onSuccess) => {
                 console.log('error', err)
                 return
             }
-            
-            console.log('Published MQTT message.')
         })
     })
 }
@@ -87,5 +85,19 @@ export const removeWatchlist = (deviceId, stock, onSuccess) => {
         
         setWatchlist(watchlist)
         onSuccess()
+
+        // Publish a message to IoT broker.
+        const params = {
+            topic: 'devices/' + deviceId + '/stocks/remove/' + stock,
+            payload: JSON.stringify({})
+        }
+        
+        const iotDataClient = new IotData({ endpoint: 'ajotwaqg3w5p0-ats.iot.us-east-1.amazonaws.com', apiVersion: '2015-05-28' })
+        iotDataClient.publish(params, (err, data) => {
+            if(err){
+                console.log('error', err)
+                return
+            }
+        })
     })
 }
