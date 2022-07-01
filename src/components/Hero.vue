@@ -1,3 +1,10 @@
+<script setup>
+const props = defineProps({
+    title: String,
+    description: String
+})
+</script>
+
 <template>
     <section>
   <div
@@ -6,17 +13,17 @@
   >
     <div
       class="absolute top-0 w-full h-full bg-center bg-cover"
-      style="background-image: url(&quot;https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1267&amp;q=80&quot;);"
+      style="background-image: url(&quot;/src/assets/laptop-product.png&quot;);"
     >
       <span id="blackOverlay" class="w-full h-full absolute opacity-75 bg-black"></span>
     </div>
     <div class="container relative mx-auto">
       <div class="items-center flex flex-wrap">
         <div class="w-full lg:w-6/12 px-4 ml-auto mr-auto text-center">
-            <h1 class="text-white font-serif font-semibold text-5xl">DisplayFy</h1>
+            <h1 class="text-white font-serif font-semibold text-5xl">{{title}}</h1>
             <p
               class="mt-4 text-lg text-gray-300"
-            >Smart displayer to track the score of any match: basketball, football, soccer & more.<br /><i>Made by fans. Made for fans.</i></p>
+            >{{description}}</p>
         </div>
       </div>
     </div>

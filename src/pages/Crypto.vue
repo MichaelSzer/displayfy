@@ -1,14 +1,9 @@
 <script setup>
-
-
+import Hero from '../components/Hero.vue'
 </script>
 
 <template>
-    <div>
-        <h2>
-            Crypto Landing
-        </h2>
-    </div>
+    <Hero title="DisplayFy" description="Smart displayer to follow your stocks." background=""/>
 </template>
 
 <style>

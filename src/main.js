@@ -12,7 +12,7 @@ const routes = [
     { path: '/sports', component: SportsPage },
     { path: '/crypto', component: CryptoPage },
     { path: '/dashboard', component: DashboardPage },
-    { path: '/', component: DashboardPage },
+    { path: '/', component: CryptoPage },
     { path: '/streaming', component: StreamingPage }
 ]
 

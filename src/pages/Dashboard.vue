@@ -4,6 +4,7 @@ import { getUser } from '../config/user'
 import { getStocks } from '../config/stocks'
 import { useRouter, useRoute } from 'vue-router'
 import { addWatchlist, removeWatchlist } from '../services/watchlist_service'
+import StyleSection from '../components/StyleSection/index.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -64,6 +65,7 @@ setTimeout(refreshUser, 3000)
             </ul>    
             <div style="flex: 0.2;"></div>
         </div>
+        <StyleSection />
     </div>
 </template>
 
