@@ -2,16 +2,19 @@
   "name": "smart-display",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview --port 4173",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "deploy": "vue-cli-service s3-deploy",
+    "dev": "vite",
+    "preview": "vite preview --port 4173"
   },
   "dependencies": {
+    "@rollup/plugin-commonjs": "^22.0.1",
+    "@vue/cli-service": "^5.0.6",
     "amazon-cognito-identity-js": "^5.2.9",
     "aws-sdk": "^2.1162.0",
+    "bootstrap": "^5.1.3",
     "vue": "^3.2.36",
-    "vue-cli-plugin-s3-deploy": "^4.0.0-rc4",
     "vue-router": "^4.0.16"
   },
   "devDependencies": {

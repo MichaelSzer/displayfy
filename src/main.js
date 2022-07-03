@@ -7,6 +7,9 @@ import CryptoPage from './pages/Crypto.vue'
 import StreamingPage from './pages/Streaming.vue'
 import DashboardPage from './pages/Dashboard.vue'
 
+// Bootstrap
+import "bootstrap/dist/css/bootstrap.min.css"
+import "bootstrap"
 
 const routes = [
     { path: '/sports', component: SportsPage },

@@ -2,6 +2,7 @@ import { AuthenticationDetails, CognitoUserPool, CognitoUser } from 'amazon-cogn
 import * as AWS from 'aws-sdk'
 import { setUser } from '../config/user'
 import { fetchWatchlist } from '../services/watchlist_service'
+import { fetchSettings } from '../services/settings_service'
 
 export const REGION = 'us-east-1'
 
@@ -27,10 +28,10 @@ const cognitoUser = new CognitoUser({
     Pool: userPool
 })
 
-AWS.config = {
+AWS.config.update({
     region: REGION,
     credentials: new AWS.CognitoIdentityCredentials({ IdentityPoolId: IDENTITY_POOL_ID })
-}
+})
 
 let onSuccess = (res) => {
     
@@ -45,6 +46,7 @@ let onSuccess = (res) => {
 
     setUser(res.idToken.payload.name, res.idToken.payload.email, [])
     fetchWatchlist('000001')
+    fetchSettings('000001')
 
     // Attach Policy to created authenticated user
     const params = {

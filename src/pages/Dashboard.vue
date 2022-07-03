@@ -1,23 +1,30 @@
 <script setup>
 import { ref, reactive } from 'vue'
-import { getUser } from '../config/user'
+import { getSettings, getUser, setSettings } from '../config/user'
 import { getStocks } from '../config/stocks'
 import { useRouter, useRoute } from 'vue-router'
 import { addWatchlist, removeWatchlist } from '../services/watchlist_service'
-import StyleSection from '../components/StyleSection/index.vue'
+import { updateSettings } from '../services/settings_service'
+import { colorToRGB } from '../config/colors'
+import FrameColorSelector from '../components/CustomizeSection/FrameColorSelector.vue'
+import BackgroundColorSelector from '../components/CustomizeSection/BackgroundColorSelector.vue'
+import LayoutSelector from '../components/CustomizeSection/LayoutSelector.vue'
 
 const router = useRouter()
 const route = useRoute()
 
 const user = reactive(getUser())
+const settings = reactive(getSettings())
 const stocks = ref(getStocks())
 
-const refreshUser = () => { 
+const refresh = () => { 
     // We can't do 'user = getUser()'. user would lose reactivity
     user.email = getUser().email
     user.name = getUser().name
-    // For non-primative data types we need to create a new instance if not vuejs doesn't updates
-    user.watchlist = [ ...getUser().watchlist ]
+
+    // For non-primative data types we need to create a new instance if not vuejs doesn't updates. This is done inside getUser() and getSettings()
+    user.watchlist = [...getUser().watchlist]
+    settings.style = getSettings().style
 }
 
 const isInWatchlist = (stock) => {
@@ -25,31 +32,39 @@ const isInWatchlist = (stock) => {
     return user.watchlist.includes(stock)
 }
 
-const stockAvailableClicked = (stock) => {
-    const i = user.value.watchlist.indexOf(stock)
-    console.log(i)
-    if ( i !== -1 )
-        user.watchlist.splice(i, 1)
-    else
-        user.watchlist.push(stock)
+const changeFrameColor = (color) => {
+    
+    updateSettings('000001', color, colorToRGB(color), 'framecolor', refresh)
 }
 
-setTimeout(refreshUser, 3000)
+const changeBackgroundColor = (color) => {
+    
+    updateSettings('000001', color, colorToRGB(color), 'backgroundcolor', refresh)
+}
+
+const changeLayout = (layout) => {
+    
+    updateSettings('000001', layout, {}, ('layout/' + layout.toLowerCase()), refresh)
+}
+
+setTimeout(refresh, 3000)
 
 </script>
 
 <template>
     <div class="root">
+        <!-- Title -->
         <div id="DisplayFyDiv">
             <h1 id="DisplayFyText">🔮🤟🦄DisplayFy🧠🔥💸</h1>
             <div style="height:2px;width:60%;background-color: rgb(200, 200, 200);" ></div>
             <h3 id="DashboardWelcome">{{user.name + "'s Dashboard"}}</h3>
         </div>
+        <!-- Stocks -->
         <div class="containerPC">
             <div style="flex: 0.2;"></div>
             <ul class="list">
                 <span class="listTitle">Available Stocks</span>
-                <li class="stock" v-for="stock in stocks" @click="isInWatchlist(stock)?removeWatchlist('000001',stock,refreshUser):addWatchlist('000001',stock, refreshUser)">
+                <li class="stock" v-for="stock in stocks" @click="isInWatchlist(stock)?removeWatchlist('000001',stock,refresh):addWatchlist('000001',stock, refresh)">
                     <p>{{stock}}</p>
                     <div v-if="isInWatchlist(stock)" class="sign" style="padding-left: 0.15em;">{{'-'}}</div>
                     <div v-else class="sign">{{'+'}}</div>
@@ -58,14 +73,17 @@ setTimeout(refreshUser, 3000)
             <div style="flex: 0.2;"></div>
             <ul class="list">
                 <span class="listTitle">Watchlist</span>
-                <li class="stock" v-for="stock in user.watchlist" @click="removeWatchlist('000001',stock,refreshUser)">
+                <li class="stock" v-for="stock in user.watchlist" @click="removeWatchlist('000001',stock,refresh)">
                     {{stock}}
                     <div class="sign" style="padding-left: 0.15em;">{{'-'}}</div>
                 </li>
             </ul>    
             <div style="flex: 0.2;"></div>
         </div>
-        <StyleSection />
+        <!-- Customize -->
+        <FrameColorSelector :color="settings.style.colors.frame" @change-color="changeFrameColor" />
+        <BackgroundColorSelector :color="settings.style.colors.background" @change-color="changeBackgroundColor" />
+        <LayoutSelector :layout="settings.style.layout" @change-layout="changeLayout" />
     </div>
 </template>
 
@@ -95,9 +113,7 @@ setTimeout(refreshUser, 3000)
 }
 
 .root {
-    position: fixed;
     width: 100%;
-    height: 100%;
     background-color: rgb(255, 255, 255);
 }
 

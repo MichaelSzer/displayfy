@@ -9,14 +9,12 @@ const props = defineProps({
     <section>
   <div
     class="relative pt-16 pb-32 flex content-center items-center justify-center"
-    style="min-height: 75vh;"
+    style="min-height: 75vh; background-color: black;"
   >
-    <div
+    <img id="hero-image"
       class="absolute top-0 w-full h-full bg-center bg-cover"
-      style="background-image: url(&quot;/src/assets/laptop-product.png&quot;);"
+      src="/src/assets/tsla.jpg"
     >
-      <span id="blackOverlay" class="w-full h-full absolute opacity-75 bg-black"></span>
-    </div>
     <div class="container relative mx-auto">
       <div class="items-center flex flex-wrap">
         <div class="w-full lg:w-6/12 px-4 ml-auto mr-auto text-center">
@@ -46,3 +44,10 @@ const props = defineProps({
   </div>
   </section>
 </template>
+
+<style>
+#hero-image {
+    max-width: 100%;
+    height: 100%;
+}
+</style>
