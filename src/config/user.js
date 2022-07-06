@@ -1,6 +1,7 @@
 let user = {
     name: '-',
     email: '-',
+    device: '-',
     watchlist: []
 }
 
@@ -22,10 +23,11 @@ export const setWatchlist = (watchlist) => {
     user.watchlist = watchlist
 }
 
-export const setUser = (name, email, watchlist) => {
+export const setUser = (name, email, device, watchlist) => {
     user = {
         name,
         email,
+        device,
         watchlist
     }
 }

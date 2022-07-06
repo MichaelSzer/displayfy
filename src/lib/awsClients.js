@@ -37,9 +37,29 @@ let onSuccess = (res, callback) => {
 
     AWS.config.credentials.expired = true;
 
-    setUser(res.idToken.payload.name, res.idToken.payload.email, [])
-    fetchWatchlist('000001')
-    fetchSettings('000001')
+    let name, email, device
+
+    // Retrieve user attributes
+    cognitoUser.getUserAttributes((err,res) => {
+        if(err) {
+            console.log('err', err.message)
+            return
+        }
+
+        for(const attribute of res){
+
+            if(attribute.getName() == 'custom:device')
+                device = attribute.getValue()
+            else if(attribute.getName() == 'name')
+                name = attribute.getValue()
+            else if(attribute.getName() == 'email')
+                email = attribute.getValue()
+        }
+
+        setUser(name, email, device, [])
+        fetchWatchlist(device)
+        fetchSettings(device)
+    })
 
     // Attach Policy to created authenticated user
     const params = {

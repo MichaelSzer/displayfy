@@ -22,6 +22,7 @@ const refresh = () => {
     // We can't do 'user = getUser()'. user would lose reactivity
     user.email = getUser().email
     user.name = getUser().name
+    user.device = getUser().device
 
     // For non-primative data types we need to create a new instance if not vuejs doesn't updates. This is done inside getUser() and getSettings()
     user.watchlist = [...getUser().watchlist]
@@ -35,17 +36,17 @@ const isInWatchlist = (stock) => {
 
 const changeFrameColor = (color) => {
     
-    updateSettings('000001', color, colorToRGB(color), 'framecolor', refresh)
+    updateSettings(user.device, color, colorToRGB(color), 'framecolor', refresh)
 }
 
 const changeBackgroundColor = (color) => {
     
-    updateSettings('000001', color, colorToRGB(color), 'backgroundcolor', refresh)
+    updateSettings(user.device, color, colorToRGB(color), 'backgroundcolor', refresh)
 }
 
 const changeLayout = (layout) => {
     
-    updateSettings('000001', layout, {}, ('layout/' + layout.toLowerCase()), refresh)
+    updateSettings(user.device, layout, {}, ('layout/' + layout.toLowerCase()), refresh)
 }
 
 const handleLogOut = () => {
@@ -79,7 +80,7 @@ onMounted(() => {
             <div style="flex: 0.2;"></div>
             <ul class="list">
                 <span class="listTitle">Available Stocks</span>
-                <li class="stock" v-for="stock in stocks" @click="isInWatchlist(stock)?removeWatchlist('000001',stock,refresh):addWatchlist('000001',stock, refresh)">
+                <li class="stock" v-for="stock in stocks" @click="isInWatchlist(stock)?removeWatchlist(user.device,stock,refresh):addWatchlist(user.device,stock, refresh)">
                     <p>{{stock}}</p>
                     <div v-if="isInWatchlist(stock)" class="sign" style="padding-left: 0.15em;">{{'-'}}</div>
                     <div v-else class="sign">{{'+'}}</div>
@@ -88,7 +89,7 @@ onMounted(() => {
             <div style="flex: 0.2;"></div>
             <ul class="list">
                 <span class="listTitle">Watchlist</span>
-                <li class="stock" v-for="stock in user.watchlist" @click="removeWatchlist('000001',stock,refresh)">
+                <li class="stock" v-for="stock in user.watchlist" @click="removeWatchlist(user.device,stock,refresh)">
                     {{stock}}
                     <div class="sign" style="padding-left: 0.15em;">{{'-'}}</div>
                 </li>
