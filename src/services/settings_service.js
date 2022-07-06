@@ -31,8 +31,6 @@ export const updateSettings = (deviceId, value, colorRGB, config, onSuccess) => 
     const settings = getSettings()
     let iotParams;
 
-    console.log(config)
-
     if ( config.includes('framecolor') ){
         settings.style.colors.frame = value
         iotParams = {   topic: 'devices/' + deviceId + '/config/' + config,
@@ -40,12 +38,14 @@ export const updateSettings = (deviceId, value, colorRGB, config, onSuccess) => 
     } else if ( config.includes('backgroundcolor') ){
         settings.style.colors.background = value
         iotParams = {   topic: 'devices/' + deviceId + '/config/' + config,
-                        payload: JSON.stringify(colorRGB) }
+        payload: JSON.stringify(colorRGB) }
     } else if ( config.includes('layout') ){
         settings.style.layout = value
         iotParams = {   topic: 'devices/' + deviceId + '/config/' + config,
-                        payload: JSON.stringify({}) }
+        payload: JSON.stringify({}) }
     } else return
+    
+    console.log(iotParams)
 
     settings.style.colors.background = settings.style.colors.background ? settings.style.colors.background : 'Black';
     settings.style.colors.frame = settings.style.colors.frame ? settings.style.colors.frame : 'White';

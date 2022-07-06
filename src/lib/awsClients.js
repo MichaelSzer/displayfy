@@ -6,35 +6,28 @@ import { fetchSettings } from '../services/settings_service'
 
 export const REGION = 'us-east-1'
 
-const Username = "mikeszerman@gmail.com"
-const Password = "T3stT3st"
+//const Username = "mikeszerman@gmail.com"
+//const Password = "M1gu3l1t0"
 
 const USER_POOL_ID = "us-east-1_TGvJqUHQF"
 const IDENTITY_POOL_ID = "us-east-1:cbcfe970-406d-43a2-b1a3-3f60c0924701"
 const APP_CLIENT_ID = "7qg9leb1mgho2dl876bci93ava"
 
-const authenticationDetails = new AuthenticationDetails({
-    Username: Username,
-    Password: Password
-})
-
 const userPool = new CognitoUserPool({
     UserPoolId: USER_POOL_ID,
-    ClientId: APP_CLIENT_ID
+    ClientId: APP_CLIENT_ID,
+    Storage: localStorage
 })
 
-const cognitoUser = new CognitoUser({
-    Username: Username,
-    Pool: userPool
-})
+let cognitoUser
 
 AWS.config.update({
     region: REGION,
     credentials: new AWS.CognitoIdentityCredentials({ IdentityPoolId: IDENTITY_POOL_ID })
 })
 
-let onSuccess = (res) => {
-    
+let onSuccess = (res, callback) => {
+
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
         IdentityPoolId: IDENTITY_POOL_ID,
         Logins: {
@@ -61,17 +54,56 @@ let onSuccess = (res) => {
             return
         }
     })
-    console.log(AWS.config.credentials)
+    
+    setTimeout(callback, 1000)
 }
 
 onSuccess.bind(this)
 
-cognitoUser.authenticateUser(authenticationDetails, {
-    onSuccess,
-    onFailure: (err) => {
-        alert(err)
+export const authenticateFromLocal = (onSuccessCallback, onFailureCallback) => {
+    cognitoUser = userPool.getCurrentUser()
+    if(cognitoUser === undefined || cognitoUser === null) {
+        onFailureCallback()
+        return
     }
-})
+
+    cognitoUser.getSession((err, session) => {
+        if(err){
+            console.log('Error', err.message)
+            onFailureCallback()
+            return
+        }
+
+        onSuccess(session, onSuccessCallback)
+    })
+}
+
+export const logout = () => {
+    if(cognitoUser) cognitoUser.signOut()
+}
+
+export const authenticate = (email, password, onSuccessCallback, onFailureCallback) => {
+
+    cognitoUser = new CognitoUser({
+        Username: email,
+        Pool: userPool,
+        Storage: localStorage
+    })
+
+    const authenticationDetails = new AuthenticationDetails({
+        Username: email,
+        Password: password
+    })
+
+    cognitoUser.authenticateUser(authenticationDetails, {
+        onSuccess: (res) => {
+            onSuccess(res, onSuccessCallback)
+        },
+        onFailure: (err) => {
+            onFailureCallback(err)
+        }
+    })
+}
 
 // To import the script and load AWS credentials
 export const load = () => {};

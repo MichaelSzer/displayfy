@@ -1,8 +1,10 @@
 <script setup>
 const props = defineProps({
     title: String,
-    description: String
+    description: String,
+    backgroundColor: String
 })
+
 </script>
 
 <template>
@@ -12,7 +14,7 @@ const props = defineProps({
     style="min-height: 75vh; background-color: black;"
   >
     <img id="hero-image"
-      class="absolute top-0 w-full h-full bg-center bg-cover"
+      class="absolute top-0 w-full h-full bg-center bg-cover shadow"
       src="/src/assets/tsla.jpg"
     >
     <div class="container relative mx-auto">
@@ -24,22 +26,6 @@ const props = defineProps({
             >{{description}}</p>
         </div>
       </div>
-    </div>
-    <div
-      class="top-auto bottom-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden"
-      style="height: 70px; transform: translateZ(0px);"
-    >
-      <svg
-        class="absolute bottom-0 overflow-hidden"
-        xmlns="http://www.w3.org/2000/svg"
-        preserveAspectRatio="none"
-        version="1.1"
-        viewBox="0 0 2560 100"
-        x="0"
-        y="0"
-      >
-        <polygon class="text-white fill-current" points="2560 0 2560 100 0 100"></polygon>
-      </svg>
     </div>
   </div>
   </section>

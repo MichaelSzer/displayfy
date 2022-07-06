@@ -1,11 +1,12 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { getSettings, getUser, setSettings } from '../config/user'
 import { getStocks } from '../config/stocks'
 import { useRouter, useRoute } from 'vue-router'
 import { addWatchlist, removeWatchlist } from '../services/watchlist_service'
 import { updateSettings } from '../services/settings_service'
 import { colorToRGB } from '../config/colors'
+import { authenticateFromLocal, logout } from '../lib/awsClients'
 import FrameColorSelector from '../components/CustomizeSection/FrameColorSelector.vue'
 import BackgroundColorSelector from '../components/CustomizeSection/BackgroundColorSelector.vue'
 import LayoutSelector from '../components/CustomizeSection/LayoutSelector.vue'
@@ -47,7 +48,20 @@ const changeLayout = (layout) => {
     updateSettings('000001', layout, {}, ('layout/' + layout.toLowerCase()), refresh)
 }
 
-setTimeout(refresh, 3000)
+const handleLogOut = () => {
+    logout()
+    router.push('/login')
+}
+
+onMounted(() => {
+
+    if ( getUser().name === '-' )
+        // Try to log in form local storage
+        authenticateFromLocal(refresh, handleLogOut)
+    else
+        refresh()
+})
+
 
 </script>
 
@@ -55,6 +69,7 @@ setTimeout(refresh, 3000)
     <div class="root">
         <!-- Title -->
         <div id="DisplayFyDiv">
+            <p @click="handleLogOut" class="ml-auto mr-8 mb-2 text-black" style="cursor: pointer;">Sign Out</p>
             <h1 id="DisplayFyText">🔮🤟🦄DisplayFy🧠🔥💸</h1>
             <div style="height:2px;width:60%;background-color: rgb(200, 200, 200);" ></div>
             <h3 id="DashboardWelcome">{{user.name + "'s Dashboard"}}</h3>
@@ -164,6 +179,11 @@ setTimeout(refresh, 3000)
 
 .stock:hover {
     background-color: rgb(240, 239, 239);
+    cursor: pointer;
+}
+
+.p:hover {
+    text-decoration: none;
     cursor: pointer;
 }
 </style>

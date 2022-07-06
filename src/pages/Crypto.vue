@@ -1,10 +1,12 @@
 <script setup>
 import Hero from '../components/Hero.vue'
 import AboutCrypto from './crypto/AboutCrypto.vue'
+import ContactUsModal from './crypto/ContactUsModal.vue'
 </script>
 
 <template>
-    <Hero title="DisplayFy" description="Smart displayer to follow your stocks." background=""/>
+    <ContactUsModal />
+    <Hero title="DisplayFy" description="Smart displayer to follow your stocks." background="" background-color="#f5f5f5"/>
     <AboutCrypto />
 </template>
 
