@@ -68,7 +68,7 @@ onMounted(() => {
 <style>
 #app {
     min-height: 100vh;
-    background-color: white;
+    background-color: #8f8f8f;
 }
 .background-login {
     background: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2) ), 

@@ -6,7 +6,7 @@ import ContactUsModal from './crypto/ContactUsModal.vue'
 
 <template>
     <ContactUsModal />
-    <Hero title="DisplayFy" description="Smart displayer to follow your stocks." background="" background-color="#f5f5f5"/>
+    <Hero title="DisplayFy" description="" background-color="#f5f5f5"/>
     <AboutCrypto />
 </template>
 

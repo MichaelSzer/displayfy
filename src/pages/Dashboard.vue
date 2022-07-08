@@ -10,13 +10,14 @@ import { authenticateFromLocal, logout } from '../lib/awsClients'
 import FrameColorSelector from '../components/CustomizeSection/FrameColorSelector.vue'
 import BackgroundColorSelector from '../components/CustomizeSection/BackgroundColorSelector.vue'
 import LayoutSelector from '../components/CustomizeSection/LayoutSelector.vue'
+import YourStocksVue from './Dashboard/YourStocks.vue'
+import YourStocks from './Dashboard/YourStocks.vue'
 
 const router = useRouter()
 const route = useRoute()
 
 const user = reactive(getUser())
 const settings = reactive(getSettings())
-const stocks = ref(getStocks())
 
 const refresh = () => { 
     // We can't do 'user = getUser()'. user would lose reactivity
@@ -57,17 +58,15 @@ const handleLogOut = () => {
 onMounted(() => {
 
     if ( getUser().name === '-' )
-        // Try to log in form local storage
+        // Try to log in from local storage
         authenticateFromLocal(refresh, handleLogOut)
-    else
-        refresh()
 })
 
 
 </script>
 
 <template>
-    <div class="root">
+    <div class="root" data-bs-spy="scroll" data-bs-target="#navbar-dashboard" >
         <!-- Title -->
         <div id="DisplayFyDiv">
             <p @click="handleLogOut" class="ml-auto mr-8 mb-2 text-black" style="cursor: pointer;">Sign Out</p>
@@ -75,28 +74,17 @@ onMounted(() => {
             <div style="height:2px;width:60%;background-color: rgb(200, 200, 200);" ></div>
             <h3 id="DashboardWelcome">{{user.name + "'s Dashboard"}}</h3>
         </div>
-        <!-- Stocks -->
-        <div class="containerPC">
-            <div style="flex: 0.2;"></div>
-            <ul class="list">
-                <span class="listTitle">Available Stocks</span>
-                <li class="stock" v-for="stock in stocks" @click="isInWatchlist(stock)?removeWatchlist(user.device,stock,refresh):addWatchlist(user.device,stock, refresh)">
-                    <p>{{stock}}</p>
-                    <div v-if="isInWatchlist(stock)" class="sign" style="padding-left: 0.15em;">{{'-'}}</div>
-                    <div v-else class="sign">{{'+'}}</div>
-                </li>
-            </ul>
-            <div style="flex: 0.2;"></div>
-            <ul class="list">
-                <span class="listTitle">Watchlist</span>
-                <li class="stock" v-for="stock in user.watchlist" @click="removeWatchlist(user.device,stock,refresh)">
-                    {{stock}}
-                    <div class="sign" style="padding-left: 0.15em;">{{'-'}}</div>
-                </li>
-            </ul>    
-            <div style="flex: 0.2;"></div>
+        <!-- Nav Bar -->
+        <div id="navbar-dashboard" class="text-center fs-4 mt-2 pr-5">
+            <a href="#stocks">Stocks</a>
+            {{' | '}}
+            <a href="#style">Style</a>
         </div>
+        <!-- Stocks -->
+        <p id="style" class="ml-4 my-4 display-6">Stocks</p>
+        <YourStocks @refresh="refresh" :stocks="user.watchlist" :device="user.device" :stocks-per-page="5"/>
         <!-- Customize -->
+        <p id="style" class="ml-4 my-4 display-6">Style</p>
         <FrameColorSelector :color="settings.style.colors.frame" @change-color="changeFrameColor" />
         <BackgroundColorSelector :color="settings.style.colors.background" @change-color="changeBackgroundColor" />
         <LayoutSelector :layout="settings.style.layout" @change-layout="changeLayout" />

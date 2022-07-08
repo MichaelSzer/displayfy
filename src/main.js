@@ -8,6 +8,7 @@ import StreamingPage from './pages/Streaming.vue'
 import DashboardPage from './pages/Dashboard.vue'
 import ThankYouPage from './pages/ThankYou.vue'
 import LoginPage from './pages/Login.vue'
+import BrowseStocks from './pages/BrowseStocks.vue'
 
 // Bootstrap
 import "bootstrap/dist/css/bootstrap.min.css"
@@ -40,7 +41,8 @@ const routes = [
     { path: '/', component: LoginPage },
     { path: '/streaming', component: StreamingPage },
     { path: '/thank-you', component: ThankYouPage },
-    { path: '/login', component: LoginPage }
+    { path: '/login', component: LoginPage },
+    { path: '/browse-stocks', component: BrowseStocks }
 ]
 
 const router = createRouter({

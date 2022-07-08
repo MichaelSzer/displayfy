@@ -36,6 +36,7 @@ const updateCommonjsPlugin = () => {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+type: 'module',
   plugins: [vue(), updateCommonjsPlugin()],
   resolve: {
     alias: {

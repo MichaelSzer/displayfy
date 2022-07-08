@@ -5,6 +5,16 @@ let user = {
     watchlist: []
 }
 
+let watchlistSet = new Set();
+
+const populateWatchlistSet = (watchlist) => {
+    watchlistSet = new Set()
+
+    for(const quote of watchlist){
+        watchlistSet.add(quote)
+    }
+}
+
 let settings = {
     style: {
         layout: 'default',
@@ -15,12 +25,17 @@ let settings = {
     }
 }
 
+export const isStockInWatchlist = (quote) => {
+    return watchlistSet.has(quote)
+}
+
 export const getUser = () => { return { ...user } }
 
 export const getSettings = () => { return { ...settings } }
 
 export const setWatchlist = (watchlist) => {
     user.watchlist = watchlist
+    populateWatchlistSet(watchlist)
 }
 
 export const setUser = (name, email, device, watchlist) => {
