@@ -75,7 +75,7 @@ let onSuccess = (res, callback) => {
         }
     })
     
-    setTimeout(callback, 1000)
+    setTimeout(callback, 2000)
 }
 
 onSuccess.bind(this)

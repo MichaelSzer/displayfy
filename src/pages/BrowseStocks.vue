@@ -25,7 +25,8 @@ onMounted(() => {
 
     if ( getUser().name === '-' )
         authenticateFromLocal(forceRerender, goToLogin)
-
+    else
+        forceRerender()
 })
 </script>
 

@@ -5,8 +5,10 @@ import { isStockInWatchlist, getUser } from '../../config/user'
 import PlusCircle from '../../components/icons/PlusCircle.vue'
 import CheckCircle2 from '../../components/icons/CheckCircle2.vue'
 import { addWatchlist, removeWatchlist } from '../../services/watchlist_service'
+import StocksSearchIconMobile from '../../components/icons/StocksSearchIconMobile.vue'
+import StocksSearchIconDesktop from '../../components/icons/StocksSearchIconDesktop.vue'
 
-const category = ref('Finance')
+const category = ref('All')
 const search = ref('')
 const keyStockList = ref(0)
 
@@ -27,6 +29,9 @@ const filterStocks = computed(() => {
     return stocks.filter( (stock) => stock.quote.toLowerCase().includes( search.value.toLowerCase() ) )
 })
 
+// Check if it is mobile
+const isMobileDevice = /Mobi/i.test(window.navigator.userAgent)
+console.log('isMobile', isMobileDevice)
 </script>
 
 <template>
@@ -43,8 +48,8 @@ const filterStocks = computed(() => {
             <!-- List Item -->
             <div class="h-12 d-flex flex-row align-items-center pr-4" v-for="({quote}) in filterStocks" :key="quote">
                 <p>{{quote}}</p>
-                <CheckCircle2 @click="removeWatchlist(getUser().device, quote, forceRerenderStocksList)" v-if="isStockInWatchlist(quote)" class="ml-auto" />
-                <PlusCircle @click="addWatchlist(getUser().device, quote, forceRerenderStocksList)" v-else class="ml-auto" style="margin-right: 0.07em;" />
+                <StocksSearchIconMobile v-if="isMobileDevice" @not-in-watchlist-click="(callback) => addWatchlist(getUser().device, quote, callback)" @in-watchlist-click="(callback) => removeWatchlist(getUser().device, quote, callback)" :in-watchlist="isStockInWatchlist(quote)" class="ml-auto" />
+                <StocksSearchIconDesktop v-else @not-in-watchlist-click="(callback) => addWatchlist(getUser().device, quote, callback)" @in-watchlist-click="(callback) => removeWatchlist(getUser().device, quote, callback)" :in-watchlist="isStockInWatchlist(quote)" class="ml-auto" />
             </div>
         </div>
     </div>

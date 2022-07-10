@@ -10,7 +10,6 @@ import { authenticateFromLocal, logout } from '../lib/awsClients'
 import FrameColorSelector from '../components/CustomizeSection/FrameColorSelector.vue'
 import BackgroundColorSelector from '../components/CustomizeSection/BackgroundColorSelector.vue'
 import LayoutSelector from '../components/CustomizeSection/LayoutSelector.vue'
-import YourStocksVue from './Dashboard/YourStocks.vue'
 import YourStocks from './Dashboard/YourStocks.vue'
 
 const router = useRouter()
@@ -30,9 +29,8 @@ const refresh = () => {
     settings.style = getSettings().style
 }
 
-const isInWatchlist = (stock) => {
-    // Check if the stock is in the Watchlist
-    return user.watchlist.includes(stock)
+const goToBrowseStocks = () => {
+    router.push('/browse-stocks')
 }
 
 const changeFrameColor = (color) => {
@@ -60,13 +58,15 @@ onMounted(() => {
     if ( getUser().name === '-' )
         // Try to log in from local storage
         authenticateFromLocal(refresh, handleLogOut)
+    else
+        refresh()
 })
 
 
 </script>
 
 <template>
-    <div class="root" data-bs-spy="scroll" data-bs-target="#navbar-dashboard" >
+    <div class="root">
         <!-- Title -->
         <div id="DisplayFyDiv">
             <p @click="handleLogOut" class="ml-auto mr-8 mb-2 text-black" style="cursor: pointer;">Sign Out</p>
@@ -74,15 +74,10 @@ onMounted(() => {
             <div style="height:2px;width:60%;background-color: rgb(200, 200, 200);" ></div>
             <h3 id="DashboardWelcome">{{user.name + "'s Dashboard"}}</h3>
         </div>
-        <!-- Nav Bar -->
-        <div id="navbar-dashboard" class="text-center fs-4 mt-2 pr-5">
-            <a href="#stocks">Stocks</a>
-            {{' | '}}
-            <a href="#style">Style</a>
-        </div>
         <!-- Stocks -->
         <p id="style" class="ml-4 my-4 display-6">Stocks</p>
         <YourStocks @refresh="refresh" :stocks="user.watchlist" :device="user.device" :stocks-per-page="5"/>
+        <div class="text-center"><button @click="goToBrowseStocks" type="button" id="go-to-browse-stocks" class="fs-5 border-1 rounded-md py-1 px-4 border-black">{{'Browse Stocks 🔎'}}</button></div>
         <!-- Customize -->
         <p id="style" class="ml-4 my-4 display-6">Style</p>
         <FrameColorSelector :color="settings.style.colors.frame" @change-color="changeFrameColor" />
@@ -106,6 +101,10 @@ onMounted(() => {
 
 #DisplayFyText {
     font-size: xxx-large;
+}
+
+#go-to-browse-stocks:hover {
+    background-color: gray;
 }
 
 .sign {

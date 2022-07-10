@@ -12,7 +12,7 @@ const props = defineProps({
 <template>
     <section>
   <div
-    class="relative pt-16 pb-32 flex content-center items-center justify-center overflow-hidden"
+    class="relative pt-16 pb-64 flex content-center items-center justify-center overflow-hidden"
     style="min-height: 75vh; background-color: black;"
   >
     <div id="hero-image"
@@ -37,7 +37,6 @@ const props = defineProps({
     background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2)), url('https://displayfy.co/assets/hero-3.jpg');
     background-position-x: 75%;
     background-repeat: no-repeat;
-    background-attachment: fixed;
     background-size: cover;
 }
 </style>
