@@ -2,6 +2,10 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import './index.css'
 import { createRouter, createWebHashHistory } from 'vue-router'
+import { createPinia } from 'pinia'
+import {} from './lib/awsClients'
+
+// Pages
 import SportsPage from './pages/Sports.vue'
 import CryptoPage from './pages/Crypto.vue'
 import StreamingPage from './pages/Streaming.vue'
@@ -50,4 +54,6 @@ const router = createRouter({
     routes
 })
 
-createApp(App).use(router).mount('#app')
+const pinia = createPinia()
+
+createApp(App).use(router).use(pinia).mount('#app')

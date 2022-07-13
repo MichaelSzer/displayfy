@@ -1,6 +1,5 @@
 <script setup>
 import { RouterView } from 'vue-router'
-import {  } from './lib/awsClients'
 </script>
 
 <template>

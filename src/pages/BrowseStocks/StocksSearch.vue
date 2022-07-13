@@ -1,12 +1,14 @@
 <script setup>
-import {ref, computed} from 'vue'
-import { getStocks } from '../../config/stocks'
-import { isStockInWatchlist, getUser } from '../../config/user'
-import PlusCircle from '../../components/icons/PlusCircle.vue'
-import CheckCircle2 from '../../components/icons/CheckCircle2.vue'
+import {ref, computed, watch} from 'vue'
+import useUserStore from '../../store/user'
+import useStocksStore from '../../store/stocks'
 import { addWatchlist, removeWatchlist } from '../../services/watchlist_service'
 import StocksSearchIconMobile from '../../components/icons/StocksSearchIconMobile.vue'
 import StocksSearchIconDesktop from '../../components/icons/StocksSearchIconDesktop.vue'
+import { storeToRefs } from 'pinia'
+
+const userStore = useUserStore()
+const stocksStore = useStocksStore()
 
 const category = ref('All')
 const search = ref('')
@@ -16,14 +18,10 @@ const changeCategory = (newCategory) => {
     category.value = newCategory
 }
 
-const forceRerenderStocksList = () => {
-    keyStockList.value++
-}
-
 const filterStocks = computed(() => {
     let stocks 
-    if ( category.value === 'All' ) stocks = getStocks()
-    else stocks = getStocks().filter((stock) => (stock.category.includes(category.value)) )
+    if ( category.value === 'All' ) stocks = stocksStore.stocks
+    else stocks = stocksStore.getStocksByCategory(category.value)
 
     // The search filter could be improved by creating sub-arrays with each added character in the input avoiding having to iterate through all the stocks.
     return stocks.filter( (stock) => stock.quote.toLowerCase().includes( search.value.toLowerCase() ) )
@@ -31,7 +29,13 @@ const filterStocks = computed(() => {
 
 // Check if it is mobile
 const isMobileDevice = /Mobi/i.test(window.navigator.userAgent)
-console.log('isMobile', isMobileDevice)
+
+// Watch if watchlist changes & update the stocks
+const { watchlist } = storeToRefs(userStore)
+
+watch(watchlist, () => {
+    keyStockList.value++
+})
 </script>
 
 <template>
@@ -44,12 +48,12 @@ console.log('isMobile', isMobileDevice)
             <button @click="changeCategory('Biotech')" :class="{ 'text-black': category === 'Biotech', 'font-medium': category === 'Biotech' }">Biotech</button>
         </div>
         <div class="border my-2"></div>
-        <div :key="keyStockList" class="overflow-y-auto max-h-96" style="">
+        <div :key="keyStockList" class="overflow-y-auto max-h-96">
             <!-- List Item -->
             <div class="h-12 d-flex flex-row align-items-center pr-4" v-for="({quote}) in filterStocks" :key="quote">
                 <p>{{quote}}</p>
-                <StocksSearchIconMobile v-if="isMobileDevice" @not-in-watchlist-click="(callback) => addWatchlist(getUser().device, quote, callback)" @in-watchlist-click="(callback) => removeWatchlist(getUser().device, quote, callback)" :in-watchlist="isStockInWatchlist(quote)" class="ml-auto" />
-                <StocksSearchIconDesktop v-else @not-in-watchlist-click="(callback) => addWatchlist(getUser().device, quote, callback)" @in-watchlist-click="(callback) => removeWatchlist(getUser().device, quote, callback)" :in-watchlist="isStockInWatchlist(quote)" class="ml-auto" />
+                <StocksSearchIconMobile v-if="isMobileDevice" @not-in-watchlist-click="(callback) => addWatchlist(userStore.deviceId, quote, callback)" @in-watchlist-click="(callback) => removeWatchlist(userStore.deviceId, quote, callback)" :in-watchlist="userStore.isStockInWatchlist(quote)" class="ml-auto" />
+                <StocksSearchIconDesktop v-else @not-in-watchlist-click="(callback) => addWatchlist(userStore.deviceId, quote, callback)" @in-watchlist-click="(callback) => removeWatchlist(userStore.deviceId, quote, callback)" :in-watchlist="userStore.isStockInWatchlist(quote)"  class="ml-auto" />
             </div>
         </div>
     </div>

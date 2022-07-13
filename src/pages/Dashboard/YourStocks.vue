@@ -16,10 +16,6 @@ const props = defineProps({
 const page = ref(1)
 const totalPages = ref(1)
 
-const forceRerenderStocksList = () => {
-    emits('refresh')
-}
-
 const previousPage = () => {
     page.value = page.value === 1 ? totalPages.value : page.value - 1
 }
@@ -30,6 +26,7 @@ const nextPage = () => {
 
 const getStocksPage = computed(() => {
     totalPages.value = Math.ceil(props.stocks.length / props.stocksPerPage)
+    page.value = page.value > totalPages.value ? 1 : page.value
     return props.stocks.slice( props.stocksPerPage * (page.value - 1), props.stocksPerPage * (page.value))
 })
 </script>
@@ -48,7 +45,7 @@ const getStocksPage = computed(() => {
             <p v-if="stocks.length === 0">No stocks saved. Browse some stocks to save them.</p>
             <div v-else class="h-12 d-flex flex-row align-items-center pr-4" v-for="quote in getStocksPage" :key="quote">
                 <p>{{quote}}</p>
-                <DashCircle @click="removeWatchlist(device, quote, forceRerenderStocksList)" class="ml-auto" />
+                <DashCircle @click="removeWatchlist(device, quote, () => {})" class="ml-auto" />
             </div>
         </div>
     </div>

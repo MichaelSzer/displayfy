@@ -1,9 +1,12 @@
 import { DynamoDB, IotData } from 'aws-sdk'
-import { setWatchlist, getUser } from '../config/user'
+import useUserStore from '../store/user'
+import cloneDeep from 'lodash.clonedeep'
 
 const TABLE_NAME = 'Watchlist'
 
 export const fetchWatchlist = (deviceId) => {
+
+    const userStore = useUserStore()
 
     const params = {
         TableName: TABLE_NAME,
@@ -19,14 +22,17 @@ export const fetchWatchlist = (deviceId) => {
 
         //console.log('data', data)
         if(data.Item.Stocks !== undefined){
-            setWatchlist(data.Item.Stocks)
+            userStore.setWatchlist(data.Item.Stocks)
         }        
     })
 }
 
 // 1. Add stock to DynamoDB Watchlist 2. Update dashboard 3. Notify devices with MQTT
 export const addWatchlist = (deviceId, stock, onSuccess) => {
-    let watchlist = getUser().watchlist;
+
+    const userStore = useUserStore()
+
+    let watchlist = cloneDeep(userStore.watchlist);
     watchlist.push(stock)
 
     const params = {
@@ -45,7 +51,7 @@ export const addWatchlist = (deviceId, stock, onSuccess) => {
             return
         }
         
-        setWatchlist(watchlist)
+        userStore.setWatchlist(watchlist)
         onSuccess()
 
         // Publish a message to IoT broker.
@@ -65,7 +71,10 @@ export const addWatchlist = (deviceId, stock, onSuccess) => {
 }
 
 export const removeWatchlist = (deviceId, stock, onSuccess) => {
-    let watchlist = getUser().watchlist;
+
+    const userStore = useUserStore()
+    
+    let watchlist = userStore.watchlist;
     watchlist.splice(watchlist.indexOf(stock), 1)
 
     const params = {
@@ -83,7 +92,7 @@ export const removeWatchlist = (deviceId, stock, onSuccess) => {
             return
         }
         
-        setWatchlist(watchlist)
+        userStore.setWatchlist(watchlist)
         onSuccess()
 
         // Publish a message to IoT broker.

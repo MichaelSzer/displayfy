@@ -1,9 +1,13 @@
 import { DynamoDB, IotData } from 'aws-sdk'
-import { setSettings, getSettings } from '../config/user'
+import useDeviceStore from '../store/device'
+import cloneDeep from 'lodash.clonedeep'
 
 const TABLE_NAME = 'Settings'
 
 export const fetchSettings = (deviceId) => {
+
+    const deviceStore = useDeviceStore()
+
     const params = {
         TableName: TABLE_NAME,
         Key: { 'DeviceId': deviceId }
@@ -18,7 +22,7 @@ export const fetchSettings = (deviceId) => {
 
         //console.log('data', data.Item)
         if(data.Item.Style !== undefined){
-            setSettings(
+            deviceStore.setStyle(
                 data.Item.Style.Layout,
                 data.Item.Style.Colors.Frame,
                 data.Item.Style.Colors.Background
@@ -28,28 +32,26 @@ export const fetchSettings = (deviceId) => {
 }
 
 export const updateSettings = (deviceId, value, colorRGB, config, onSuccess) => {
-    const settings = getSettings()
-    let iotParams;
+
+    const deviceStore = useDeviceStore()
+    const style = cloneDeep( deviceStore.style )
+    let iotParams
 
     if ( config.includes('framecolor') ){
-        settings.style.colors.frame = value
+        style.colors.frame = value
         iotParams = {   topic: 'devices/' + deviceId + '/config/' + config,
                         payload: JSON.stringify(colorRGB) }
     } else if ( config.includes('backgroundcolor') ){
-        settings.style.colors.background = value
+        style.colors.background = value
         iotParams = {   topic: 'devices/' + deviceId + '/config/' + config,
         payload: JSON.stringify(colorRGB) }
     } else if ( config.includes('layout') ){
-        settings.style.layout = value
+        style.layout = value
         iotParams = {   topic: 'devices/' + deviceId + '/config/' + config,
         payload: JSON.stringify({}) }
     } else return
     
     console.log(iotParams)
-
-    settings.style.colors.background = settings.style.colors.background ? settings.style.colors.background : 'Black';
-    settings.style.colors.frame = settings.style.colors.frame ? settings.style.colors.frame : 'White';
-    settings.style.layout = settings.style.layout ? settings.style.layout : 'Modern';
 
     const params = {
         TableName: 'Settings',
@@ -59,10 +61,10 @@ export const updateSettings = (deviceId, value, colorRGB, config, onSuccess) => 
         AttributeUpdates: {
             Style: {
                  Value: {
-                    'Layout': settings.style.layout,
+                    'Layout': style.layout,
                     'Colors': {
-                        'Background': settings.style.colors.background,
-                        'Frame': settings.style.colors.frame 
+                        'Background': style.colors.background,
+                        'Frame': style.colors.frame 
                     }
                 },
                 Action: 'PUT'
@@ -74,11 +76,11 @@ export const updateSettings = (deviceId, value, colorRGB, config, onSuccess) => 
     const docClient = new DynamoDB.DocumentClient({apiVersion: '2012-08-10'})
     docClient.update(params, (err, data) => {
         if(err){
-            console.log('error', err)
+            console.log('error', err)            
             return
         }
         
-        setSettings(settings.style.layout, settings.style.colors.frame, settings.style.colors.background)
+        deviceStore.setStyle(style.layout, style.colors.frame, style.colors.background)
         onSuccess()
 
         // Publish a message to IoT broker.        

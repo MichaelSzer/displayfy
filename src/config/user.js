@@ -1,7 +1,7 @@
 let user = {
     name: '-',
     email: '-',
-    device: '-',
+    deviceId: '-',
     watchlist: []
 }
 

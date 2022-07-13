@@ -1,6 +1,7 @@
 import { AuthenticationDetails, CognitoUserPool, CognitoUser } from 'amazon-cognito-identity-js'
 import * as AWS from 'aws-sdk'
 import { setUser } from '../config/user'
+import useUserStore from '../store/user'
 import { fetchWatchlist } from '../services/watchlist_service'
 import { fetchSettings } from '../services/settings_service'
 
@@ -56,7 +57,10 @@ let onSuccess = (res, callback) => {
                 email = attribute.getValue()
         }
 
-        setUser(name, email, device, [])
+        const userStore = useUserStore()
+
+        userStore.logIn(name, email, device)
+
         fetchWatchlist(device)
         fetchSettings(device)
     })
@@ -75,14 +79,18 @@ let onSuccess = (res, callback) => {
         }
     })
     
-    setTimeout(callback, 2000)
+    callback()
 }
 
 onSuccess.bind(this)
 
 export const authenticateFromLocal = (onSuccessCallback, onFailureCallback) => {
+
+    const userStore = useUserStore()
     cognitoUser = userPool.getCurrentUser()
     if(cognitoUser === undefined || cognitoUser === null) {
+
+        userStore.logOut()
         onFailureCallback()
         return
     }
@@ -90,6 +98,7 @@ export const authenticateFromLocal = (onSuccessCallback, onFailureCallback) => {
     cognitoUser.getSession((err, session) => {
         if(err){
             console.log('Error', err.message)
+            userStore.logOut()
             onFailureCallback()
             return
         }
@@ -99,6 +108,10 @@ export const authenticateFromLocal = (onSuccessCallback, onFailureCallback) => {
 }
 
 export const logout = () => {
+    
+    const userStore = useUserStore()
+
+    userStore.logOut()
     if(cognitoUser) cognitoUser.signOut()
 }
 

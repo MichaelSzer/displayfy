@@ -1,9 +1,6 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { getSettings, getUser, setSettings } from '../config/user'
-import { getStocks } from '../config/stocks'
 import { useRouter, useRoute } from 'vue-router'
-import { addWatchlist, removeWatchlist } from '../services/watchlist_service'
 import { updateSettings } from '../services/settings_service'
 import { colorToRGB } from '../config/colors'
 import { authenticateFromLocal, logout } from '../lib/awsClients'
@@ -11,23 +8,14 @@ import FrameColorSelector from '../components/CustomizeSection/FrameColorSelecto
 import BackgroundColorSelector from '../components/CustomizeSection/BackgroundColorSelector.vue'
 import LayoutSelector from '../components/CustomizeSection/LayoutSelector.vue'
 import YourStocks from './Dashboard/YourStocks.vue'
+import useUserStore from '../store/user'
+import useDeviceStore from '../store/device'
 
 const router = useRouter()
 const route = useRoute()
 
-const user = reactive(getUser())
-const settings = reactive(getSettings())
-
-const refresh = () => { 
-    // We can't do 'user = getUser()'. user would lose reactivity
-    user.email = getUser().email
-    user.name = getUser().name
-    user.device = getUser().device
-
-    // For non-primative data types we need to create a new instance if not vuejs doesn't updates. This is done inside getUser() and getSettings()
-    user.watchlist = [...getUser().watchlist]
-    settings.style = getSettings().style
-}
+const userStore = useUserStore()
+const deviceStore = useDeviceStore()
 
 const goToBrowseStocks = () => {
     router.push('/browse-stocks')
@@ -35,17 +23,17 @@ const goToBrowseStocks = () => {
 
 const changeFrameColor = (color) => {
     
-    updateSettings(user.device, color, colorToRGB(color), 'framecolor', refresh)
+    updateSettings(user.device, color, colorToRGB(color), 'framecolor', () => {})
 }
 
 const changeBackgroundColor = (color) => {
     
-    updateSettings(user.device, color, colorToRGB(color), 'backgroundcolor', refresh)
+    updateSettings(user.device, color, colorToRGB(color), 'backgroundcolor', () => {})
 }
 
 const changeLayout = (layout) => {
     
-    updateSettings(user.device, layout, {}, ('layout/' + layout.toLowerCase()), refresh)
+    updateSettings(user.device, layout, {}, ('layout/' + layout.toLowerCase()), () => {})
 }
 
 const handleLogOut = () => {
@@ -55,11 +43,9 @@ const handleLogOut = () => {
 
 onMounted(() => {
 
-    if ( getUser().name === '-' )
+    if ( !userStore.logged )
         // Try to log in from local storage
-        authenticateFromLocal(refresh, handleLogOut)
-    else
-        refresh()
+        authenticateFromLocal(() => {}, handleLogOut)
 })
 
 
@@ -72,17 +58,17 @@ onMounted(() => {
             <p @click="handleLogOut" class="ml-auto mr-8 mb-2 text-black" style="cursor: pointer;">Sign Out</p>
             <h1 id="DisplayFyText">🔮🤟🦄DisplayFy🧠🔥💸</h1>
             <div style="height:2px;width:60%;background-color: rgb(200, 200, 200);" ></div>
-            <h3 id="DashboardWelcome">{{user.name + "'s Dashboard"}}</h3>
+            <h3 id="DashboardWelcome">{{userStore.name + "'s Dashboard"}}</h3>
         </div>
         <!-- Stocks -->
         <p id="style" class="ml-4 my-4 display-6">Stocks</p>
-        <YourStocks @refresh="refresh" :stocks="user.watchlist" :device="user.device" :stocks-per-page="5"/>
+        <YourStocks :stocks="userStore.watchlist" :device="userStore.deviceId" :stocks-per-page="5"/>
         <div class="text-center"><button @click="goToBrowseStocks" type="button" id="go-to-browse-stocks" class="fs-5 border-1 rounded-md py-1 px-4 border-black">{{'Browse Stocks 🔎'}}</button></div>
         <!-- Customize -->
         <p id="style" class="ml-4 my-4 display-6">Style</p>
-        <FrameColorSelector :color="settings.style.colors.frame" @change-color="changeFrameColor" />
-        <BackgroundColorSelector :color="settings.style.colors.background" @change-color="changeBackgroundColor" />
-        <LayoutSelector :layout="settings.style.layout" @change-layout="changeLayout" />
+        <FrameColorSelector :color="deviceStore.style.colors.frame" @change-color="changeFrameColor" />
+        <BackgroundColorSelector :color="deviceStore.style.colors.background" @change-color="changeBackgroundColor" />
+        <LayoutSelector :layout="deviceStore.style.layout" @change-layout="changeLayout" />
     </div>
 </template>
 

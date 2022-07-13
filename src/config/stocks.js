@@ -1,6 +1,6 @@
 //let stocks = ['TSLA', 'MCD', 'DIS', 'MSFT', 'COST', 'ME', 'NIKE', 'SBUX', 'XOM', 'SPY', 'UPST']
 
-const stocks = [
+export default [
     {
         quote: 'AAPL',
         category: ['Technology']
@@ -178,5 +178,3 @@ const stocks = [
         category: ['Biotech']
     }
 ]
-
-export const getStocks = () => stocks

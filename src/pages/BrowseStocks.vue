@@ -2,8 +2,10 @@
 import { onMounted, ref } from 'vue'
 import StocksSearch from './BrowseStocks/StocksSearch.vue'
 import { useRouter } from 'vue-router'
-import { setWatchlist, getUser } from '../config/user'
 import { authenticateFromLocal } from '../lib/awsClients'
+import useUserStore from '../store/user'
+
+const userStore = useUserStore()
 
 const router = useRouter()
 const keyStocksSearch = ref(0)
@@ -23,10 +25,8 @@ const forceRerender = () => {
 
 onMounted(() => {
 
-    if ( getUser().name === '-' )
+    if ( !userStore.logged )
         authenticateFromLocal(forceRerender, goToLogin)
-    else
-        forceRerender()
 })
 </script>
 
@@ -40,7 +40,7 @@ onMounted(() => {
             <button @click="goToDashboard" type="button" class="fs-5 btn-close btn-close-black ml-auto mr-5" aria-label="Close"></button>
         </div>
         <!-- Search -->
-        <StocksSearch :key="keyStocksSearch"/>
+        <StocksSearch />
     </div>
 </template>
 
